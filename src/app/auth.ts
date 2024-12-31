@@ -5,8 +5,10 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 
 export const authConfig: NextAuthConfig = {
-  // セッション情報を管理するにはadapterを使用する
   adapter: PrismaAdapter(prisma),
+  session: {
+    strategy: "jwt",
+  },
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
@@ -22,9 +24,14 @@ export const authConfig: NextAuthConfig = {
     }),
   ],
   callbacks: {
-    async signIn({user, account}) {
-      console.log(user, account)
-      return true
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub!;
+      }
+      return session;
+    },
+    async signIn({}) {
+      return true;
     }
   }
 };
