@@ -3,8 +3,6 @@ import Google from "next-auth/providers/google";
 import { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
-import Sendgrid from "next-auth/providers/sendgrid"
-
 
 export const authConfig: NextAuthConfig = {
   adapter: PrismaAdapter(prisma),
@@ -13,19 +11,21 @@ export const authConfig: NextAuthConfig = {
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
     }),
-    Sendgrid({
-      apiKey: process.env.AUTH_SENDGRID_KEY!,
-    }),
   ],
   callbacks: {
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
-      if (isOnDashboard) {
-        if (isLoggedIn) return true;
-        return false;
+    async signIn({ user, account, profile }) {
+      // ユーザーデータの処理
+      if (account?.provider === "google") {
+        user.name = profile?.name
+        user.email = profile?.email
+        // 必要に応じて他のプロファイル情報も追加
       }
-      return true;
+      return true
+    },
+    async session({ session, user }) {
+      // セッションにユーザー情報を追加
+      session.user.id = user.id
+      return session
     },
   },
 };

@@ -6,9 +6,10 @@ export default async function middleware(request: Request) {
   const { pathname } = new URL(request.url)
 
   // 認証が必要なパスの定義
-  const isProtectedRoute = pathname.startsWith('/user')
+  const isProtectedRoute = pathname.startsWith('/user') || pathname.startsWith('/plan')
+
   // 認証関連ページのパス
-  // const isAuthPage = pathname === '/signin' || pathname === '/login'
+  const isAuthPage = pathname === '/signin' || pathname === '/login'
 
   // ケース1: 未ログインユーザーが保護されたルートにアクセスした場合
   if (isProtectedRoute && !session) {
@@ -16,9 +17,9 @@ export default async function middleware(request: Request) {
   }
 
   // ケース2: ログイン済みユーザーが認証ページにアクセスした場合
-  // if (isAuthPage && session) {
-  //   return NextResponse.redirect(new URL('/user/dashboard', request.url))
-  // }
+  if (isAuthPage && session) {
+    return NextResponse.redirect(new URL('/user/dashboard', request.url))
+  }
 
   // その他のケース: アクセスを許可
   return NextResponse.next()
@@ -29,6 +30,7 @@ export const config = {
   matcher: [
     // 認証が必要なルート
     '/user/:path*',
+    '/plan/:path*',
     // 認証ページ
     '/signin',
     '/login',
