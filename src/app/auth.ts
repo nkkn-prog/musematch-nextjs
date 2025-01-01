@@ -3,6 +3,7 @@ import Google from "next-auth/providers/google";
 import { NextAuthConfig } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
+// import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authConfig: NextAuthConfig = {
   // セッション情報を管理するにはadapterを使用する
@@ -11,6 +12,13 @@ export const authConfig: NextAuthConfig = {
     strategy: "jwt",
   },
   providers: [
+    // CredentialsProvider({
+    //   name: "credentials",
+    //   credentials: {
+    //     email: { label: "Email", type: "text" },
+    //     password: { label: "Password", type: "password" },
+    //   },
+    // }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
@@ -32,9 +40,11 @@ export const authConfig: NextAuthConfig = {
       }
       return session;
     },
-    // ユーザーがログインしたときに呼ばれる
-    async signIn({user, account}) {
 
+    // 未対応：　ユーザーがいない場合は新規登録されるようにしているが、本来はサインインとサインアップを分けるべき。
+    // 認証に時間をかけられないので、一旦Googleのみを実装数している
+    async signIn({user, account}) {
+      console.log('アカウント', account);
       if(account?.provider === "google") {
       // emailが存在するかどうかを確認
         if (!user.email) {
@@ -90,8 +100,9 @@ export const authConfig: NextAuthConfig = {
             }
           });
         }
+        return true;
       }
-      return true;
+      return false;
     }
   }
 };
