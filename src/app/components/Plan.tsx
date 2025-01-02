@@ -142,9 +142,11 @@ const Plan = (props: { mode: Mode }) => {
                       </Flex>
                     </Radio.Group>
                   </Box>
-
                   <TextInput label='タイトル' placeholder='タイトル'/>
                   <RichTextEditorComponent label='内容'/>
+                  <Box my='1rem'>
+                    <Checkbox label='コースを中止する'/>
+                  </Box>
                 </Flex>
                 <Flex justify='center' mt='1rem'>
                   <Button mt='1rem' bg='navy' color='white' w='100%' mr='5rem'><Link href='/user/dashboard'>一覧へ戻る</Link></Button>
