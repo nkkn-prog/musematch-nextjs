@@ -90,6 +90,7 @@ const Plan = (props: { mode: Mode }) => {
             </Box>
             <Flex direction='column' gap='1rem'>
               <TextInput label='タイトル' placeholder='タイトル' />
+              {/* TODO: データベースから取得したデータを表示する */}
               <MultiSelect
                 label="カテゴリ"
                 placeholder="カテゴリを選択"
