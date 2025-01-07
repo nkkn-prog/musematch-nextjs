@@ -10,8 +10,8 @@ import SubScript from '@tiptap/extension-subscript';
 import { Text } from '@mantine/core';
 import { useState } from 'react';
 
-function RichTextEditorComponent({label}: {label: string}) {
-  const [editorContent, setEditorContent] = useState('')
+function RichTextEditorComponent({label, value, onChange}: {label: string, value: string, onChange: (value: string) => void}) {
+  const [editorContent, setEditorContent] = useState(value)
 
   const editor = useEditor({
     extensions: [
@@ -29,8 +29,9 @@ function RichTextEditorComponent({label}: {label: string}) {
   // フォーカスが外れたらエディタの内容を保存
   const handleBlur = () => {
     if(editor) {
-      setEditorContent(editor.getHTML())
-      console.log(editorContent)
+      const newContent = editor.getHTML()
+      setEditorContent(newContent)
+      onChange(newContent);
     } else {
       setEditorContent('')
     }
