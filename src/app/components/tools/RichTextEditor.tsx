@@ -23,7 +23,7 @@ function RichTextEditorComponent({label, value, onChange}: {label: string, value
       Highlight,
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
     ],
-    content: editorContent,
+    content: editorContent || '',
   });
 
   // フォーカスが外れたらエディタの内容を保存
