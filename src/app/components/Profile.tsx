@@ -6,14 +6,13 @@ import React, { useState, useEffect } from 'react'
 import { Mode, ProfileValues } from '../types'
 // import Image from 'next/image';
 import RichTextEditorComponent from './tools/RichTextEditor';
-import { createProfile } from '../utils/profile/api';
+import { createProfile, getProfile, updateProfile } from '../utils/profile/api';
 
 const Profile = (props: { mode: Mode }) => {
   // 共通部分
   const { mode } = props;
   const [userId, setUserId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string>('');
-  const [profileEmail, setProfileEmail] = useState<string>('');
   const [profileInstruments, setProfileInstruments] = useState<string[]>([]);
   const [profileBio, setProfileBio] = useState<string>('');
 
@@ -47,11 +46,28 @@ const Profile = (props: { mode: Mode }) => {
       imageUrl: 'test.png',
       instruments: profileInstruments,
     }
-    createProfile(formData)
+    if(mode === 'create'){
+      createProfile(formData)
+    } else {
+      updateProfile(userId, formData)
+    }
   }
 
   // 編集画面の処理
-
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (mode === 'edit' && userId) {
+        const profile = await getProfile(userId)
+        if (profile) {
+          setProfileName(profile.data.name)
+          setProfileInstruments(profile.data.instruments)
+          setProfileBio(profile.data.bio || '')
+          // setProfileImageUrl(profile.data.imageUrl)
+        }
+      }
+    }
+    fetchProfile()
+  }, [mode, userId])
 
   // フォーム内必須処理の追加
   return (
@@ -110,7 +126,6 @@ const Profile = (props: { mode: Mode }) => {
             </Box>
             <Flex direction='column' gap='1rem'>
               <TextInput label='名前' placeholder='名前'  value={profileName} onChange={(e) => setProfileName(e.target.value)}/>
-              <TextInput label='メールアドレス' placeholder='メールアドレス' value={profileEmail} onChange={(e) => setProfileEmail(e.target.value)}/>
               <MultiSelect
                 label="出来る/やりたい楽器"
                 placeholder="楽器を選択"

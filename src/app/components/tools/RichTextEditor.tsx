@@ -8,7 +8,7 @@ import TextAlign from '@tiptap/extension-text-align';
 import Superscript from '@tiptap/extension-superscript';
 import SubScript from '@tiptap/extension-subscript';
 import { Text } from '@mantine/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function RichTextEditorComponent({label, value, onChange}: {label: string, value: string, onChange: (value: string) => void}) {
   const [editorContent, setEditorContent] = useState(value)
@@ -36,6 +36,14 @@ function RichTextEditorComponent({label, value, onChange}: {label: string, value
       setEditorContent('')
     }
   }
+
+  // profileBioが設定された後にエディタの更新がなされていなかったことで、データが表示されなかった。
+  // そのため、エディタの内容を更新するためのコードを追加した。
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
+    }
+  }, [value, editor]);
 
   return (
     <>
