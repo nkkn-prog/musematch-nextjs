@@ -1,31 +1,133 @@
-import { Badge, Button, Card, CardSection, Group, Text } from '@mantine/core'
+'use client'
+import { Badge, Button, Card, CardSection, Flex, Text, Box } from '@mantine/core'
 import Image from 'next/image'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getPlan } from '../utils/plan/api'
+import { Mode, Plan } from '../types'
+import { useRouter } from 'next/navigation'
 
-const CardList = () => {
+// HTMLタグを除去するヘルパー関数を追加
+const stripHtml = (html: string) => {
+  const tmp = document.createElement('div');
+  tmp.innerHTML = html;
+  return tmp.textContent || tmp.innerText || '';
+};
+
+const CardList = (props: { mode: Mode }) => {
+  
+  const { mode } = props;
+  const [userId, setUserId] = useState<string>('');
+  const [plans, setPlans] = useState<Plan[]>([]);
+  const [myPlans, setMyPlans] = useState<Plan[]>([]);
+  const router = useRouter();
+
+  useEffect(() => {
+    // クライアントサイドでユーザーIDを取得
+    const fetchUserId = async () => {
+      const response = await fetch('/api/auth/session');
+      const session = await response.json();
+      setUserId(session?.user?.id);
+    };
+    fetchUserId();
+  }, []);
+
+  useEffect(() => {
+    const fetchPlans = async () => {
+      // プランを取得する
+      const plans = await getPlan();
+      setPlans(plans.data);
+
+      // 取得したプランのうち、ユーザーIDが一致するプランを取得する
+      if (mode === 'myplan') {
+        // plansのデータをコピーする
+        const plansDuplicate = [...plans.data];
+        const myPlans = plansDuplicate.filter((plan: Plan) => plan.userId === userId);
+        setMyPlans(myPlans);
+      }
+    }
+    fetchPlans()
+  }, [mode, userId]);
+
+  const handleMoveToPlan = (id: number) => {
+    if(mode === 'myplan'){
+      router.push(`/user/plan/edit/${id}`);
+    }else{
+    router.push(`/plan/${id}`); 
+    }
+  }
+
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder w='15rem'>
-      <CardSection>
-        {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
-        <Image
-          src="/saxophone.jpg"
-          height={120}
-          width={240}
-          alt="Saxophone"
-          style={{ objectFit: 'cover' }}
-        />
-      </CardSection>
+    <Flex gap='md' wrap='wrap'>
+      {mode !== 'myplan' ? (
+        plans.map((plan) => (
+          <Card shadow="sm" padding="lg" radius="md" withBorder w='15rem' key={plan.id} h='22rem'>
+            <CardSection>
+              {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
+              <Image
+                src="/saxophone.jpg"
+                height={120}
+                width={240}
+                alt="Saxophone"
+                style={{ objectFit: 'cover' }}
+              />
+            </CardSection>
 
-      <Group justify="space-between" mt="xs" mb="xs">
-        <Text fw={500}>Saxophone</Text>
-        <Badge color="pink">申込可</Badge>
-      </Group>
+            <Box mt="xs" mb="xs" h='5rem'>
+              <Text fw={500} lineClamp={2}>{plan.title}</Text>
+              {plan.cancellation ?  <Badge color="red">申込不可</Badge> : <Badge color="pink">申込可</Badge>}
+            </Box>
 
-      <Text size="sm" c="dimmed">
-        テストテストテストテストテストテストテストテストテスト
-      </Text>
-      <Button color="navy" fullWidth mt="md" radius="md">プランを見る</Button>
-    </Card>
+            <Text size="sm" c="dimmed" h='3rem' lineClamp={2}>
+              {stripHtml(plan.description)}
+            </Text>
+            <Button
+              color="navy"
+              fullWidth
+              mt="md"
+              radius="md"
+              h='3rem'
+              onClick={() => {handleMoveToPlan(Number(plan.id))}}
+            >
+              プランを見る</Button>
+          </Card>
+        ))
+      ) : (
+        myPlans.map((plan) => (
+          <Card shadow="sm" padding="lg" radius="md" withBorder w='15rem' key={plan.id} h='22rem'>
+            <CardSection>
+              {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
+              <Image
+                src="/saxophone.jpg"
+                height={120}
+                width={240}
+                alt="Saxophone"
+                style={{ objectFit: 'cover' }}
+              />
+            </CardSection>
+
+            <Box mt="xs" mb="xs" h='5rem'>
+              <Text fw={500} h='3rem' lineClamp={2}>{plan.title}</Text>
+              {plan.cancellation ?  <Badge color="red" my='0.5rem'>申込不可</Badge> : <Badge color="pink" my='0.5rem'>申込可</Badge>}
+            </Box>
+
+            <Text size="sm" c="dimmed" h='3rem' lineClamp={2}>
+              {stripHtml(plan.description)}
+            </Text>
+            <Button
+              color="navy"
+              fullWidth
+              mt="md"
+              radius="md"
+              h='3rem'
+              onClick={() => {handleMoveToPlan(Number(plan.id))}}
+            >
+              プランを編集する</Button>
+          </Card>
+        ))
+      )}
+
+    </Flex>
+    
   )
 }
 
