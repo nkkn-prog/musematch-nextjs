@@ -11,7 +11,7 @@ const PlanList = () => {
       <Paper withBorder p='1rem' my='5rem' mih='70vh'>
         {/* TODO:パスに合わせて表示する文字列を変える */}
         <Text fz='1.2rem' fw='bold' mb='1rem'>{planTitle}</Text>
-        <CardList/>
+        <CardList mode='general'/>
       </Paper>
     </Container>
   )

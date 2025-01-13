@@ -5,8 +5,7 @@ import React from 'react'
 const PlanDetail = () => {
   return (
     <Container>
-      <Paper>
-        <Title order={2}>プラン詳細</Title>
+      <Paper withBorder p='1rem' my='5rem' mih='70vh'>
         <Image src="/saxophone.jpg" height={240} width={240} alt="Saxophone" style={{ objectFit: 'cover' }} />
         {/* TODO:プラン作成で入力した内容を表示する。HTMLを変換する必要があるかも */}
         <Text>テストテストテストテストテストテストテストテストテスト</Text>

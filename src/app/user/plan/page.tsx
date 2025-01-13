@@ -1,8 +1,14 @@
+import CardList from '@/app/components/CardList'
+import { Container, Paper } from '@mantine/core'
 import React from 'react'
 
 const page = () => {
   return (
-    <div>page</div>
+    <Container size='100%' mih='100vh'>
+      <Paper withBorder p='2rem' m='2rem'>
+        <CardList mode='myplan' />
+      </Paper>
+    </Container>
   )
 }
 
