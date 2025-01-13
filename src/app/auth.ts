@@ -12,13 +12,6 @@ export const authConfig: NextAuthConfig = {
     strategy: "jwt",
   },
   providers: [
-    // CredentialsProvider({
-    //   name: "credentials",
-    //   credentials: {
-    //     email: { label: "Email", type: "text" },
-    //     password: { label: "Password", type: "password" },
-    //   },
-    // }),
     Google({
       clientId: process.env.AUTH_GOOGLE_ID!,
       clientSecret: process.env.AUTH_GOOGLE_SECRET!,
@@ -43,63 +36,8 @@ export const authConfig: NextAuthConfig = {
 
     // 未対応：　ユーザーがいない場合は新規登録されるようにしているが、本来はサインインとサインアップを分けるべき。
     // 認証に時間をかけられないので、一旦Googleのみを実装数している
-    async signIn({user, account}) {
-      console.log('アカウント', account);
+    async signIn({account}) {
       if(account?.provider === "google") {
-      // emailが存在するかどうかを確認
-        if (!user.email) {
-          return false;
-        }
-
-        const existingUser = await prisma.user.findUnique({
-          where: { email: user.email! }
-        });
-
-        // ユーザーが存在しない場合は新規作成
-        if (!existingUser) {
-          const newUser = await prisma.user.create({
-            data: {
-              email: user.email!,
-              name: user.name,
-            }
-          });
-          await prisma.account.create({
-            data: {
-              userId: newUser.id,
-              type: account.type,
-              provider: account.provider,
-              providerAccountId: account.providerAccountId,
-              access_token: account.access_token,
-              refresh_token: account.refresh_token,
-              expires_at: account.expires_at,
-              token_type: account.token_type,
-              scope: account.scope,
-              id_token: account.id_token,
-            },
-          });
-          await prisma.session.create({
-            data: {
-              expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30日
-              sessionToken: crypto.randomUUID(),
-              userId: newUser.id,
-            }
-          });
-        } else {
-          // ユーザーが存在する場合はトークン更新
-          await prisma.account.update({
-            where: {
-              provider_providerAccountId: {
-                provider: account.provider,
-                providerAccountId: account.providerAccountId
-              }
-            },
-            data: {
-              access_token: account.access_token,
-              refresh_token: account.refresh_token,
-              expires_at: account.expires_at,
-            }
-          });
-        }
         return true;
       }
       return false;
