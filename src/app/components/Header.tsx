@@ -22,8 +22,8 @@ export const Header = async () => {
               </MenuTarget>
               <MenuDropdown>
                 {/*  */}
-                <MenuItem><Link href='user/plan/create'>プラン作成</Link></MenuItem>
-                <MenuItem><Link href='user/plan'>マイプラン一覧</Link></MenuItem>
+                <MenuItem><Link href='/user/plan/create'>プラン作成</Link></MenuItem>
+                <MenuItem><Link href='/user/plan'>マイプラン一覧</Link></MenuItem>
               </MenuDropdown>
             </Menu>
           </Box>
