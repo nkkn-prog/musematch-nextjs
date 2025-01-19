@@ -93,6 +93,7 @@ model Plan {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   user          User     @relation(fields: [userId], references: [id])
+  contracts     Contract[]
 }
 
 model Message {
@@ -114,4 +115,14 @@ model Instrument {
 	name          String
 	categoryId    Int
 	category      Category   @relation(fields: [categoryId], references: [id])
+}
+
+model Contract {
+  id            Int    @id @default(autoincrement())
+  instructorId  String
+  studentId     String
+  planId        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  plan          Plan     @relation(fields: [planId], references: [id])
 }
