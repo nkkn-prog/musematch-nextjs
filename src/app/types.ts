@@ -1,4 +1,5 @@
 export type Mode = 'create' | 'edit' | 'view' | 'myplan' |'general'
+export type UploadMode = 'profile' | 'plan'
 
 export type ProfileValues = {
   userId: string;
