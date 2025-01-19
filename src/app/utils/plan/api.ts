@@ -1,7 +1,8 @@
 import { PlanValuesForCreate, PlanValuesForUpdate } from "@/app/types";
 
+// api/user/plan
 // 全てのプランを取得する
-export const getPlan = async () => {
+export const getAllPlans = async () => {
   const res = await fetch('/api/user/plan');
   return res.json();
 }
@@ -29,3 +30,20 @@ export const updatePlan = async (planValues: PlanValuesForUpdate) => {
   });
   return res;
 };
+
+
+// api/plan
+// 特定のプランを取得する
+export const getPlan = async (id: number) => {
+  const res = await fetch(`/api/plan/${id}`);
+  return res.json()
+}
+
+// プランを申し込む
+export const applyPlan = async (applyValue: { planId: number, userId: string, instructorId: string }) => {
+  const res = await fetch(`/api/plan/${applyValue.planId}`, {
+    method: 'POST',
+    body: JSON.stringify(applyValue),
+  });
+  return res;
+}
