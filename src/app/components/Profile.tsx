@@ -46,7 +46,7 @@ const Profile = (props: { mode: Mode}) => {
       }
     };
     fetchProfile();
-  }, [mode, userId]);
+  }, [mode, userId, router]);
 
   const IMAGE_MIME_TYPE = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 

@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
 import { NextResponse } from "next/server";
 
 export const GET = async (
@@ -15,13 +14,10 @@ export const GET = async (
                 userId: userId
             }
         });
-        if(!profile){
-            return redirect('/user/profile/create')
-        }
+        return NextResponse.json({data: profile}, { status: 200 });
     } catch (error) {
         return NextResponse.json({ error: 'エラーが発生しました' }, { status: 500 });
     }
-    return NextResponse.json({data: profile}, { status: 200 });
 }
 
 export const PUT = async (request: Request, { params }: { params: { id: string } }) => {
