@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image';
 import RichTextEditorComponent from './tools/RichTextEditor';
 import { useForm } from 'react-hook-form';
-import { Mode, PlanValuesForCreate, PlanValuesForUpdate } from '../types';
+import { Mode, PlanValuesForCreate, PlanValuesForUpdate, UploadMode } from '../types';
 import Link from 'next/link';
 import { createPlan, getMyPlan, updatePlan } from '../utils/plan/api';
 import { useRouter } from 'next/navigation';
@@ -31,23 +31,33 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
   // planを取得
   useEffect(() => {
     const fetchPlan= async () => {
-      if(props.id){
-        setPlanId(props.id);
-        const data = await getMyPlan(props.id);
-        console.log(data);
-        setPlanTitle(data.title);
-        setPlanInstruments(data.instruments);
-        setPlanDescription(data.description);
-        setPlanStop(data.cancellation);
-        setPlanContract(data.contract);
-        setPlanPrice(data.price);
-        setPlanTime(data.time);
+      if(mode === 'edit'){
+        if(props.id !== 0 && props.id !== undefined){
+          setPlanId(props.id);
+          const data = await getMyPlan(props.id);
+          // データをセットする
+          setPlanTitle(data.title);
+          setPlanInstruments(data.instruments);
+          setPlanDescription(data.description);
+          setPlanStop(data.cancellation);
+          setPlanContract(data.contract);
+          setPlanPrice(data.price);
+          setPlanTime(data.time);
+        }
+      } else if(mode === 'create'){
+          setPlanTitle('');
+          setPlanInstruments([]);
+          setPlanDescription('');
+          setPlanStop(false);
+          setPlanContract('once');
+          setPlanPrice(0);
+          setPlanTime(0);
       } else {
         return alert('プランIDが取得できませんでした');
       }
     };
     fetchPlan();
-  }, [props.id]);
+  }, [mode, props.id]);
 
 
   // ユーザーIDを取得
@@ -62,6 +72,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
   }, []);
 
   // TODO: 画像をアップロードした時にアップロードされた画像URLを取得し、格納する
+  const uploadMode: UploadMode = 'plan'
   const [imagePath, setImagePath] = useState<File | null>(null);
   const IMAGE_MIME_TYPE = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 
@@ -244,7 +255,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
                   </Box>
                 </Flex>
                 <Flex justify='center' mt='1rem'>
-                  <Button mt='1rem' bg='navy' color='white' w='100%' mr='5rem'><Link href='/user/dashboard'>一覧へ戻る</Link></Button>
+                  <Button mt='1rem' bg='navy' color='white' w='100%' mr='5rem'><Link href='/plan'>一覧へ戻る</Link></Button>
                   <Button type='submit' mt='1rem' bg='navy' color='white' w='100%'>{buttonTitle}</Button>
                 </Flex>
             </Box>
