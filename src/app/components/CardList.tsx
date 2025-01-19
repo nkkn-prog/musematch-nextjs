@@ -1,5 +1,5 @@
 'use client'
-import { Badge, Button, Card, CardSection, Flex, Text, Box } from '@mantine/core'
+import { Button, Card, CardSection, Flex, Text, Box } from '@mantine/core'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { getAllPlans } from '../utils/plan/api'
@@ -65,7 +65,7 @@ const CardList = (props: { mode: Mode }) => {
             <CardSection>
               {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
               <Image
-                src="/saxophone.jpg"
+                src={plan.thumbnailPath ? `${plan.thumbnailPath}` : '/saxophone.jpg'}
                 height={120}
                 width={240}
                 alt="Saxophone"
@@ -109,7 +109,7 @@ const CardList = (props: { mode: Mode }) => {
             <CardSection>
               {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
               <Image
-                src="/saxophone.jpg"
+                src={plan.thumbnailPath ? `${plan.thumbnailPath}` : '/saxophone.jpg'}
                 height={120}
                 width={240}
                 alt="Saxophone"
@@ -119,7 +119,6 @@ const CardList = (props: { mode: Mode }) => {
 
             <Box mt="xs" mb="xs" h='5rem'>
               <Text fw={500} h='3rem' lineClamp={2}>{plan.title}</Text>
-              {plan.cancellation ?  <Badge color="red" my='0.5rem'>申込不可</Badge> : <Badge color="pink" my='0.5rem'>申込可</Badge>}
             </Box>
 
             <Text size="sm" c="dimmed" h='3rem' lineClamp={2}>

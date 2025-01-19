@@ -10,6 +10,7 @@ import { Mode, PlanValuesForCreate, PlanValuesForUpdate, UploadMode } from '../t
 import Link from 'next/link';
 import { createPlan, getMyPlan, updatePlan } from '../utils/plan/api';
 import { useRouter } from 'next/navigation';
+import { handleUpload } from '../utils/upload/api';
 
 const Plan = (props: { id: number | undefined, mode: Mode }) => {
 
@@ -25,6 +26,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
   const [planTime, setPlanTime] = useState<number>(0);
   const [planConsultation, setPlanConsultation] = useState<string>('online');
   const [userId, setUserId] = useState<string | null>(null);
+  const [thumbnailPath, setThumbnailPath] = useState<string>('');
 
   const router = useRouter();
 
@@ -43,6 +45,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
           setPlanContract(data.contract);
           setPlanPrice(data.price);
           setPlanTime(data.time);
+          setThumbnailPath(data.thumbnailPath);
         }
       } else if(mode === 'create'){
           setPlanTitle('');
@@ -52,6 +55,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
           setPlanContract('once');
           setPlanPrice(0);
           setPlanTime(0);
+          setThumbnailPath('');
       } else {
         return alert('プランIDが取得できませんでした');
       }
@@ -73,7 +77,6 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
 
   // TODO: 画像をアップロードした時にアップロードされた画像URLを取得し、格納する
   const uploadMode: UploadMode = 'plan'
-  const [imagePath, setImagePath] = useState<File | null>(null);
   const IMAGE_MIME_TYPE = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 
   // タイトル
@@ -96,7 +99,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
         title: planTitle,
         instruments: planInstruments,
         description: planDescription,
-        thumbnailPath: 'test.png',
+        thumbnailPath: thumbnailPath,
         contract: planContract,
         price: planPrice,
         time: planTime,
@@ -116,7 +119,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
           title: planTitle,
           instruments: planInstruments,
           description: planDescription,
-          thumbnailPath: 'test.png',
+          thumbnailPath: thumbnailPath,
           contract: planContract,
           price: planPrice,
           time: planTime,
@@ -145,17 +148,27 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
               <Flex direction='column' gap='1rem' justify='center' align='center'>
                 <Image
                 // TODO: アップロードされた画像のパスを格納する
-                  src={imagePath ? `${imagePath}` : '/logo/google-logo.png'}
+                  src={thumbnailPath ? `${thumbnailPath}` : '/saxophone.jpg'}
                   alt='プロフィール画像'
-                  width={100}
-                  height={100}
-                  style={{ borderRadius: '50%', border: '1px solid #ccc', objectFit: 'cover', marginBottom: '2rem'}}
+                  width={600}
+                  height={200}
+                  style={{ border: '1px solid #ccc', objectFit: 'cover', marginBottom: '2rem'}}
                 />
               </Flex>
               <Dropzone
-                maxSize={1024 * 5 * 2} 
+                maxSize={5 * 1024 * 1024 } 
                 accept={IMAGE_MIME_TYPE} 
-                onDrop={(files) => console.log('accepted files', files)}
+                onDrop={async (files) => {
+                  try{
+                    const uploadedUrl = await handleUpload(files[0], uploadMode);
+                    if (uploadedUrl) {
+                      setThumbnailPath(uploadedUrl as string);
+                      console.log(uploadedUrl)
+                    }
+                  } catch(error){
+                    console.error(error);
+                  }
+                }}
                 onReject={(files) => console.log('rejected files', files)}
               >
                 <Group justify="center" gap="xl" p='1rem' miw={50} mih={50} style={{ pointerEvents: 'none', borderRadius: '5px',borderStyle: 'dashed', borderWidth: '0.5px'}}>

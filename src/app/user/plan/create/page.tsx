@@ -3,7 +3,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <Plan mode='create' id={''}/>
+    <Plan mode='create' id={0}/>
   )
 }
 
