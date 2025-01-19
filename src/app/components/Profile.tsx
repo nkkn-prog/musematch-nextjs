@@ -3,47 +3,66 @@ import { Box, Button, Container, Flex, Group, MultiSelect, Paper, Text, TextInpu
 import { Dropzone } from '@mantine/dropzone'
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons-react';
 import React, { useState, useEffect } from 'react'
-import { Mode, ProfileValues } from '../types'
-// import Image from 'next/image';
+import { Mode, ProfileValues, UploadMode} from '../types'
 import RichTextEditorComponent from './tools/RichTextEditor';
 import { createProfile, getProfile, updateProfile } from '../utils/profile/api';
+import { handleUpload } from '../utils/upload/api';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
-const Profile = (props: { mode: Mode }) => {
+const Profile = (props: { mode: Mode}) => {
   // 共通部分
   const { mode } = props;
+  const defaultImageUrl = '/profile/user.png'
+
   const [userId, setUserId] = useState<string | null>(null);
   const [profileName, setProfileName] = useState<string>('');
   const [profileInstruments, setProfileInstruments] = useState<string[]>([]);
   const [profileBio, setProfileBio] = useState<string>('');
+  const [profileImageUrl, setProfileImageUrl] = useState<string>(defaultImageUrl);
 
+  const router = useRouter()
+
+  const uploadMode: UploadMode = 'profile'
   useEffect(() => {
-    // クライアントサイドでユーザーIDを取得
-    const fetchUserId = async () => {
+    
+    const fetchProfile = async () => {
+      // ユーザーIDを取得
       const response = await fetch('/api/auth/session');
       const session = await response.json();
       setUserId(session?.user?.id);
-    };
-    fetchUserId();
-  }, []);
 
-  // TODO: 画像をアップロードした時にアップロードされた画像URLを取得し、格納する
-  // const [imagePath, setImagePath] = useState<File | null>(null);
+      // プロフィールを取得
+      if (mode === 'edit' && userId) {
+        const profile = await getProfile(userId)
+        if (profile === null) {
+          router.push('/user/profile/create')
+        } else {
+          setProfileName(profile.data.name)
+          setProfileInstruments(profile.data.instruments)
+          setProfileBio(profile.data.bio || '')
+          setProfileImageUrl(profile.data.imageUrl || defaultImageUrl)
+        }
+      }
+    };
+    fetchProfile();
+  }, [mode, userId]);
+
   const IMAGE_MIME_TYPE = ['image/png', 'image/jpeg', 'image/jpg', 'image/gif'];
 
   // タイトル
   const title = mode === 'create' ? 'プロフィール作成' : 'プロフィール編集';
   const buttonTitle = mode === 'create' ? '作成' : '更新';
 
-  // TODO: フォームの内容を送信する
+  // フォームの内容を送信する
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!userId) return;
-
     const formData: ProfileValues = {
       userId: userId,
       name: profileName,
       bio: profileBio,
-      imageUrl: 'test.png',
+      imageUrl: profileImageUrl,
       instruments: profileInstruments,
     }
     if(mode === 'create'){
@@ -53,22 +72,6 @@ const Profile = (props: { mode: Mode }) => {
     }
   }
 
-  // 編集画面の処理
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (mode === 'edit' && userId) {
-        const profile = await getProfile(userId)
-        if (profile) {
-          setProfileName(profile.data.name)
-          setProfileInstruments(profile.data.instruments)
-          setProfileBio(profile.data.bio || '')
-          // setProfileImageUrl(profile.data.imageUrl)
-        }
-      }
-    }
-    fetchProfile()
-  }, [mode, userId])
-
   // フォーム内必須処理の追加
   return (
     <Container size='sm'>
@@ -77,20 +80,29 @@ const Profile = (props: { mode: Mode }) => {
           <form onSubmit={(e) => handleSubmit(e)}>
             <Box mb='2rem'>
               <Text>プロフィール画像</Text>
-              {/* <Flex direction='column' gap='1rem' justify='center' align='center'>
+              <Box ta='center' my='1rem'>
                 <Image
-                // TODO: アップロードされた画像のパスを格納する
-                  src={imagePath ? `${imagePath}` : '/logo/google-logo.png'}
+                  src={profileImageUrl}
                   alt='プロフィール画像'
                   width={100}
                   height={100}
-                  style={{ borderRadius: '50%', border: '1px solid #ccc', objectFit: 'cover', marginBottom: '2rem'}}
+                  style={{ borderRadius: '2rem', borderStyle: 'solid', borderWidth: '0.5px', borderColor: 'var(--mantine-color-dimmed)', objectFit: 'cover'}}
                 />
-              </Flex> */}
+              </Box>
               <Dropzone
-                maxSize={1024 * 5 * 2} 
+                maxSize={5* 1024 * 1024} 
                 accept={IMAGE_MIME_TYPE} 
-                onDrop={(files) => console.log('accepted files', files)}
+                onDrop={async (files) => {
+                  try{
+                    const uploadedUrl = await handleUpload(files[0], uploadMode);
+                    if (uploadedUrl) {
+                      setProfileImageUrl(uploadedUrl as string);
+                      console.log(uploadedUrl)
+                    }
+                  } catch(error){
+                    console.error(error);
+                  }
+                }}
                 onReject={(files) => console.log('rejected files', files)}
               >
                 <Group justify="center" gap="xl" p='1rem' miw={50} mih={50} style={{ pointerEvents: 'none', borderRadius: '5px',borderStyle: 'dashed', borderWidth: '0.5px'}}>
