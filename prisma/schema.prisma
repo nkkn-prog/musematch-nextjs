@@ -94,16 +94,8 @@ model Plan {
   updatedAt     DateTime  @updatedAt
   user          User     @relation(fields: [userId], references: [id])
   contracts     Contract[]
+  chatRooms     ChatRoom[]
 }
-
-model Message {
-  id            Int    @id @default(autoincrement())
-  senderId      String
-  receiverId    String
-  message       String
-  createdAt     DateTime  @default(now())
-}
-
 model Category {
 	id            Int    @id @default(autoincrement())
 	name          String
@@ -125,4 +117,26 @@ model Contract {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   plan          Plan     @relation(fields: [planId], references: [id])
+}
+
+model ChatRoom {
+  id            Int    @id @default(autoincrement())
+  instructorId  String
+  studentId     String
+  planId        Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  plan          Plan     @relation(fields: [planId], references: [id])
+  messages      ChatMessage[]
+}
+
+model ChatMessage {
+  id            Int    @id @default(autoincrement())
+  chatRoomId    Int
+  senderId      String
+  receiverId    String
+  message       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  chatRoom      ChatRoom @relation(fields: [chatRoomId], references: [id])
 }
