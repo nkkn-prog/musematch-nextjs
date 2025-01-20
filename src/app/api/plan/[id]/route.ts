@@ -4,7 +4,8 @@ import { NextResponse } from "next/server";
 
 // 特定のプランを取得する
 export const GET = async (request: Request, { params }: { params: { id: string } }) => {
-  const id = params.id
+
+  const id = await params.id
 
   const session = await auth()
   const userId = session?.user?.id
@@ -59,7 +60,15 @@ export const POST = async (request: Request) => {
       }
     })
 
-    if(contract){
+    const chatRoom = await prisma.chatRoom.findFirst({
+      where: {
+        planId: applyValue.planId,
+        studentId: applyValue.userId,
+        instructorId: applyValue.instructorId,
+      }
+    })
+
+    if(contract || chatRoom){
       return NextResponse.json({ error: 'すでに契約済みです' }, { status: 400 });
     }
 
@@ -70,6 +79,7 @@ export const POST = async (request: Request) => {
         instructorId: applyValue.instructorId,
       }
     });
+    
 
     return NextResponse.json({ message: 'プランを申し込みました' }, { status: 200 });
 

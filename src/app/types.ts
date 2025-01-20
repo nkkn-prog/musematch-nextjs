@@ -1,4 +1,4 @@
-export type Mode = 'create' | 'edit' | 'view' | 'myplan' |'general'
+export type Mode = 'create' | 'edit' | 'view' | 'myplan' |'general' | 'contract'
 export type UploadMode = 'profile' | 'plan'
 
 export type ProfileValues = {
@@ -47,4 +47,12 @@ export type Plan = {
   time: number;
   consultation: string;
   cancellation: boolean;
+}
+
+export interface Message {
+  id: number;
+  message: string;
+  senderId: string;
+  receiverId: string;
+  createdAt: Date;
 }
