@@ -22,3 +22,9 @@ export const sendMessage = async (data: {
   });
   return res.json()
 };
+
+export const getChatlist = async (id: string) => {
+  const response = await fetch(`/api/user/chat/list/${id}`);
+  const data = await response.json();
+  return data;
+}; 

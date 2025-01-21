@@ -48,8 +48,6 @@ const ChatRoom = () => {
     fetchRoomData();
   }, [id, userId]);
 
-  console.log(inputMessage);
-
   const handleSendMessage = async () => {
     const data = {
       chatRoomId: Number(id),

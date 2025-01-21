@@ -35,8 +35,6 @@ export async function GET(
 export const POST = async (req: NextRequest) => {
   const body = await req.json();
 
-  console.log(body);
-
   const chatRoomId = Number(body.chatRoomId);
   const senderId = body.senderId;
   const receiverId = body.receiverId;
