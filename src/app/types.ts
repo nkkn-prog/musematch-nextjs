@@ -56,3 +56,13 @@ export interface Message {
   receiverId: string;
   createdAt: Date;
 }
+
+export type ChatMessage = {
+  id: number;
+  chatRoomId: number;
+  message: string;
+  senderId: string;
+  receiverId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

@@ -8,7 +8,7 @@ export async function GET(
   try {
     const userId = params.id;
 
-    const chatMessage = await prisma.chatMessage.findFirst({
+    const chatMessages = await prisma.chatMessage.findMany({
       where: {
         OR: [
           { senderId: userId },
@@ -17,12 +17,15 @@ export async function GET(
       },
       orderBy: {
         createdAt: 'desc'
-      }
+      },
+      distinct: ['chatRoomId']
     });
+
+    // recieverIdとInstructorIdからユーザーのprofileのthumbnailUrlを取得して、chatMessageに含ませたい。
 
     return NextResponse.json({ 
       success: true,
-      data: chatMessage 
+      data: chatMessages 
     });
 
   } catch (error) {
