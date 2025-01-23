@@ -21,11 +21,45 @@ export async function GET(
       distinct: ['chatRoomId']
     });
 
-    // recieverIdとInstructorIdからユーザーのprofileのthumbnailUrlを取得して、chatMessageに含ませたい。
+    // 各メッセージの送信者と受信者のプロフィール情報を取得
+    const messagesWithProfiles = await Promise.all(
+      chatMessages.map(async (message) => {
+        const [senderProfile, receiverProfile] = await Promise.all([
+          prisma.profile.findUnique({
+            where: { userId: message.senderId },
+            select: { 
+              name: true,
+              imageUrl: true,
+              userId: true  // 送信者のID
+            }
+          }),
+          prisma.profile.findUnique({
+            where: { userId: message.receiverId },
+            select: { 
+              name: true,
+              imageUrl: true,
+              userId: true  // 受信者のID
+            }
+          })
+        ]);
+
+        return {
+          ...message,
+          sender: {
+            ...senderProfile,
+            id: message.senderId  // 送信者のIDを明示的に含める
+          },
+          receiver: {
+            ...receiverProfile,
+            id: message.receiverId  // 受信者のIDを明示的に含める
+          }
+        };
+      })
+    );
 
     return NextResponse.json({ 
       success: true,
-      data: chatMessages 
+      data: messagesWithProfiles 
     });
 
   } catch (error) {

@@ -1,9 +1,10 @@
 'use client'
-import { Box, Container, Paper, Text} from '@mantine/core'
+import { Box, Container, Flex, Paper, Text} from '@mantine/core'
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { getChatlist } from '@/app/utils/chat/api';
 import { ChatMessage } from '@/app/types';
+import Image from 'next/image';
 
 const ChatList = () => {
   const { id } = useParams();
@@ -27,6 +28,7 @@ const ChatList = () => {
     const fetchChatList = async () => {
       if (!userId) return;
       const response = await getChatlist(id as string);
+      console.log(response)
       setChatList(response.data);
     };
     fetchChatList();
@@ -38,8 +40,9 @@ const ChatList = () => {
 
   return (
     <Container>
-      <Paper withBorder p='1rem' my='5rem' bg='navy'>
+      <Paper withBorder p='1rem' my='5rem' bg='navy' mih='50vh'>
         <Box>
+          <Text fw='bold' ta='center' fz='1.5rem' c='white' mb='2rem'>チャットリスト</Text>
           {chatList.length > 0 ? (
             chatList.map((chat) => (
                 <Paper
@@ -50,10 +53,26 @@ const ChatList = () => {
                     borderBottom: '1px solid #eee'
                   }}
                 >
-                  <Text>{chat.message}</Text>
-                  <Text size='sm' c='dimmed'>
-                    {new Date(chat.createdAt).toLocaleString()}
-                  </Text>
+                  <Flex justify='space-between' align='center'>
+                    <Image
+                      src={chat.receiver.imageUrl}
+                      height={50}
+                      width={50}
+                      alt='receiver image'
+                      style={{
+                        border:'solid 0.25px #000',
+                        borderRadius: '20%',
+                      }}
+                    />
+                    <Text fw='bold'>{chat.receiver.name}  さん</Text>
+                    <Flex>
+                      <Text mr='lg' size='md' c='dimmed'>{chat.message}</Text>
+                      <Text size='sm' c='dimmed'>
+                        {new Date(chat.createdAt).toLocaleString()}
+                      </Text>
+                    </Flex>
+                    
+                  </Flex>
                 </Paper>
             ))
           ) : (
