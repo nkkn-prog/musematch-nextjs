@@ -148,7 +148,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
               <Flex direction='column' gap='1rem' justify='center' align='center'>
                 <Image
                 // TODO: アップロードされた画像のパスを格納する
-                  src={thumbnailPath ? `${thumbnailPath}` : '/saxophone.jpg'}
+                  src={thumbnailPath ? `${thumbnailPath}` : '/default_bg.jpg'}
                   alt='プロフィール画像'
                   width={600}
                   height={200}

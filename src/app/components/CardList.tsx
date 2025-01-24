@@ -1,5 +1,5 @@
 'use client'
-import { Button, Card, CardSection, Flex, Text, Box } from '@mantine/core'
+import { Button, Card, CardSection, Flex, Text, Box, Paper } from '@mantine/core'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { getAllPlans } from '../utils/plan/api'
@@ -61,36 +61,26 @@ const CardList = (props: { mode: Mode }) => {
     <Flex gap='md' wrap='wrap'>
       {mode !== 'myplan' ? (
         othersPlans.map((plan) => (
-          <Card shadow="sm" padding="lg" radius="md" withBorder w='15rem' key={plan.id} h='22rem'>
-            <CardSection>
-              {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
-              <Image
-                src={plan.thumbnailPath ? `${plan.thumbnailPath}` : '/saxophone.jpg'}
-                height={120}
-                width={240}
-                alt="Saxophone"
-                style={{ objectFit: 'cover' }}
-              />
-            </CardSection>
+            <Card shadow="sm" padding="lg" radius="md" withBorder w='15rem' key={plan.id} h='22rem'>
+              <CardSection>
+                {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
+                <Image
+                  src={plan.thumbnailPath ? `${plan.thumbnailPath}` : '/default_bg.jpg'}
+                  height={120}
+                  width={240}
+                  alt="planThumbnail"
+                  style={{ objectFit: 'cover' }}
+                />
+              </CardSection>
 
-            <Box mt="xs" mb="xs" h='5rem'>
-              <Text fw={500} h='3rem' lineClamp={2}>{plan.title}</Text>
-            </Box>
+              <Box mt="xs" mb="xs" h='5rem'>
+                <Text fw={500} h='3rem' lineClamp={2}>{plan.title}</Text>
+              </Box>
 
-            <Text size="sm" c="dimmed" h='3rem' lineClamp={2}>
-              {stripHtml(plan.description)}
-            </Text>
-            {plan.userId !== userId ?(
-            <Button
-              color="navy"
-              fullWidth
-              mt="md"
-              radius="md"
-              h='3rem'
-              onClick={() => {handleMoveToPlan(Number(plan.id), plan.userId)}}
-            >
-              プランを見る</Button>
-            ) : (
+              <Text size="sm" c="dimmed" h='3rem' lineClamp={2}>
+                {stripHtml(plan.description)}
+              </Text>
+              {plan.userId !== userId ?(
               <Button
                 color="navy"
                 fullWidth
@@ -99,9 +89,19 @@ const CardList = (props: { mode: Mode }) => {
                 h='3rem'
                 onClick={() => {handleMoveToPlan(Number(plan.id), plan.userId)}}
               >
-                プランを編集する</Button>
-            )}
-          </Card>
+                プランを見る</Button>
+              ) : (
+                <Button
+                  color="navy"
+                  fullWidth
+                  mt="md"
+                  radius="md"
+                  h='3rem'
+                  onClick={() => {handleMoveToPlan(Number(plan.id), plan.userId)}}
+                >
+                  プランを編集する</Button>
+              )}
+            </Card>
         ))
       ) : (
         myPlans.map((plan) => (
@@ -109,10 +109,10 @@ const CardList = (props: { mode: Mode }) => {
             <CardSection>
               {/* Cardのサイズに合わせて画像のサイズを調整する 240px = 15rem * 16px */}
               <Image
-                src={plan.thumbnailPath ? `${plan.thumbnailPath}` : '/saxophone.jpg'}
+                src={plan.thumbnailPath ? `${plan.thumbnailPath}` : '/default_bg.jpg'}
                 height={120}
                 width={240}
-                alt="Saxophone"
+                alt="planThumbnail"
                 style={{ objectFit: 'cover' }}
               />
             </CardSection>
@@ -136,9 +136,7 @@ const CardList = (props: { mode: Mode }) => {
           </Card>
         ))
       )}
-
     </Flex>
-    
   )
 }
 
