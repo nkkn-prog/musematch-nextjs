@@ -1,7 +1,5 @@
 // 画像アップロードAPI
 export const handleUpload = async (image: File, mode: string) => {
-  console.log(image)
-  console.log(mode)
   const reader = new FileReader();
 
   // この処理が終わる前にonDropが呼ばれ、reader.resultがundefinedになっていた。
