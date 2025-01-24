@@ -61,8 +61,18 @@ export type ChatMessage = {
   id: number;
   chatRoomId: number;
   message: string;
-  senderId: string;
-  receiverId: string;
+  sender: {
+    id: string;
+    name: string;
+    imageUrl: string;
+    userid: string;
+  };
+  receiver: {
+    id: string;
+    name: string;
+    imageUrl: string;
+    userid: string;
+  };
   createdAt: Date;
   updatedAt: Date;
 }
