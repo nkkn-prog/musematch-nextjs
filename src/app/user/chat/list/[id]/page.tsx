@@ -1,5 +1,5 @@
 'use client'
-import { Box, Container, Flex, Paper, Text} from '@mantine/core'
+import { Box, Container, Flex, Loader, Paper, Text} from '@mantine/core'
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { getChatlist } from '@/app/utils/chat/api';
@@ -40,7 +40,7 @@ const ChatList = () => {
 
   return (
     <Container>
-      <Paper withBorder p='1rem' my='5rem' bg='navy' mih='50vh'>
+      <Paper withBorder p='1rem' my='5rem' bg='dark' mih='50vh'>
         <Box>
           <Text fw='bold' ta='center' fz='1.5rem' c='white' mb='2rem'>チャットリスト</Text>
           {chatList.length > 0 ? (
@@ -76,7 +76,7 @@ const ChatList = () => {
                 </Paper>
             ))
           ) : (
-            <Text ta='center'>メッセージはありません</Text>
+            <Loader color="gray" />
           )}
         </Box>
       </Paper>
