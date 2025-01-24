@@ -15,6 +15,9 @@ export const Header = async () => {
       </Box>
       {session?.user? (
         <Flex>
+          <Text c="white" fz="1rem" fw="bold" mr='1rem'>
+            <Link href={`/user/chat/list/${session.user.id}`}>チャット一覧</Link>
+          </Text>
           <Box>
             <Menu trigger="hover" openDelay={50} closeDelay={100} position='bottom'>
               <MenuTarget>
