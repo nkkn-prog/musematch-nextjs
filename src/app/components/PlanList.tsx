@@ -3,7 +3,6 @@ import React from 'react'
 import CardList from './CardList'
 
 const PlanList = () => {
-
   const planTitle = 'プラン一覧'
 
   return (

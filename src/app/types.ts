@@ -35,18 +35,20 @@ export type PlanValuesForUpdate = {
   cancellation: boolean;
 }
 
-export type Plan = {
-  id: string;
+export interface Plan {
+  id: number;
   userId: string;
   title: string;
-  instruments: string[];
   description: string;
+  instruments: string[];
   thumbnailPath?: string;
-  contract: string;
   price: number;
   time: number;
+  contract: string;
   consultation: string;
   cancellation: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Message {

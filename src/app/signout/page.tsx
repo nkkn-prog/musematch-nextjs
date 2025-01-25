@@ -1,31 +1,42 @@
-'use client'
+"use client";
+import { useEffect, useState } from "react";
+import { signOut } from "next-auth/react";
+import { Container, Paper, Text, Button, Stack } from "@mantine/core";
 
-import { Box, Text, Button, Container, Paper } from '@mantine/core'
-import React from 'react'
-import { signOut } from '../auth';
-import { useRouter } from 'next/navigation';
+const SignOutPage = () => {
+  const [count, setCount] = useState(3);
 
-const SignOut = () => {
-  const router = useRouter();
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCount((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          signOut({ callbackUrl: "/signin" });
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
-  const handleSignOut = async () => {
-    await signOut();
-    router.push('/signin');
-  }
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <Container size='100%' mih='20vh'>
-      <Paper withBorder p='1rem' my='5rem' mih='20vh'>
-        <Box ta='center'>
-          <Text fz='1.5rem' fw='bold'>サインアウトしますか？</Text>
-          <Box mt='2rem'>
-            <Button mr='3rem' onClick={() => router.push('/plan')} bg='navy'>キャンセル</Button>
-            <Button onClick={() => handleSignOut()} bg='navy'>サインアウト</Button>
-          </Box>
-        </Box>
+    <Container size="md" mt="5rem">
+      <Paper bg="white" p="md">
+        <Stack align="center" gap="md">
+          <Text fz="1.5rem" fw="bold">ログアウト中...</Text>
+          <Text>{count}秒後に自動的にログアウトします</Text>
+          <Button
+            onClick={() => signOut({ callbackUrl: "/signin" })}
+            color="gray"
+          >
+            今すぐログアウト
+          </Button>
+        </Stack>
       </Paper>
     </Container>
-  )
-}
+  );
+};
 
-export default SignOut
+export default SignOutPage;

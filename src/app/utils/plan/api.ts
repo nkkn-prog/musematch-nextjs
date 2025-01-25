@@ -1,5 +1,21 @@
 import { PlanValuesForCreate, PlanValuesForUpdate } from "@/app/types";
 
+interface PlanResponse {
+  plan: {
+    id: number;
+    title: string;
+    description: string;
+    price: number;
+    instructorId: string;
+  };
+  contract: {
+    id: number;
+    planId: number;
+    studentId: string;
+    instructorId: string;
+  } | null;
+}
+
 // api/user/plan
 // 全てのプランを取得する
 export const getAllPlans = async () => {
@@ -36,7 +52,7 @@ export const updatePlan = async (planValues: PlanValuesForUpdate) => {
 // 特定のプランを取得する
 export const getPlan = async (id: number) => {
   const res = await fetch(`/api/plan/${id}`);
-  return res.json()
+  return res.json() as Promise<PlanResponse>
 }
 
 // プランを申し込む

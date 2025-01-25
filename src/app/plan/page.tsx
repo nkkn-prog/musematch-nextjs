@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 import CategorySideBar from '../components/CategorySideBar'
 import PlanList from '../components/PlanList'

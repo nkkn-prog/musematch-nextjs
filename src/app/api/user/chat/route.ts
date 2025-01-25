@@ -22,5 +22,17 @@ export const POST = async (req: NextRequest) => {
     },
   });
 
+  if (!chatRoomId) {
+    // チャットルームが存在しない場合は新規作成
+    const newChatRoom = await prisma.chatRoom.create({
+      data: {
+        studentId,
+        instructorId,
+        planId,
+      },
+    });
+    return NextResponse.json(newChatRoom);
+  }
+
   return NextResponse.json(chatRoomId);
 };

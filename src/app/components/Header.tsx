@@ -1,10 +1,14 @@
+"use client";
+
 import { Box,Flex, Menu, MenuDropdown, MenuItem, MenuTarget, Text } from '@mantine/core'
 import Link from 'next/link'
 import React from 'react'
-import { getSession } from '../utils/auth'
+import { useSession } from 'next-auth/react'
 
-export const Header = async () => {
-  const session = await getSession();
+export const Header = () => {
+  const { data: session} = useSession();
+
+  console.log(session);
 
   return (
     <Flex w="100%" h="4rem" bg="navy" display='flex' justify='space-between' align='center'>

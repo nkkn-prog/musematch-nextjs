@@ -1,27 +1,28 @@
-import { auth } from "@/app/auth";
+import { getServerSession } from "next-auth";
+import { handler as authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 // 特定のプランを取得する
 export const GET = async (request: Request, { params }: { params: { id: string } }) => {
+  if (!params?.id) {
+    return NextResponse.json({ error: 'IDが存在しません' }, { status: 500 });
+  }
 
-  const id = await params.id
+  // パラメータを最初に取得
+  const planId = Number(params.id);
 
-  const session = await auth()
+  const session = await getServerSession(authOptions) as { user?: { id: string } } | null;
   const userId = session?.user?.id
 
   try{
-    if(!id){
-      return NextResponse.json({ error: 'IDが存在しません' }, { status: 500 });
-    }
-  
     const plan = await prisma.plan.findUnique({
-      where: { id: Number(id) }
+      where: { id: planId }
     });
 
     const contract = await prisma.contract.findFirst({
       where: {
-        planId: Number(id),
+        planId,
         studentId: userId,
       }
     })
@@ -31,7 +32,7 @@ export const GET = async (request: Request, { params }: { params: { id: string }
       contract,
     }
 
-      return NextResponse.json(responseData);
+    return NextResponse.json(responseData);
 
   } catch (error) {
     console.error(error);

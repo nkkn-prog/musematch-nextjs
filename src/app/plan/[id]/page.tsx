@@ -7,43 +7,55 @@ import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
 import { stripHtml } from '@/app/utils/page'
 import { getChatRoomId } from '@/app/utils/chat/api';
+import { useSession } from 'next-auth/react';
 
 const PlanDetail = () => {
-  const { id } = useParams();
-  const planId = Number(id);
+  const params = useParams();
+  const planId = params?.id ? Number(params.id) : 0;
   const [plan, setPlan] = useState<Plan | null>(null);
   const [userId, setUserId] = useState<string>('');
   const [instructorId, setInstructorId] = useState<string>('');
   const router = useRouter();
   const [isContract, setIsContract] = useState<boolean>(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
-    // クライアントサイドでユーザーIDを取得
-    const fetchUserId = async () => {
-      const response = await fetch('/api/auth/session');
-      const session = await response.json();
-      setUserId(session?.user?.id);
-    };
-    fetchUserId();
-  }, []);
+    if (session?.user?.id) {
+      setUserId(session.user.id);
+    }
+  }, [session]);
 
   // プランを取得する
   useEffect(() => {
     const fetchPlan = async () => {
+      if (!planId) {
+        router.push('/plan');
+        return;
+      }
       const data = await getPlan(planId);
+      console.log(data);
       if(data.plan){
-        setPlan(data.plan);
-        setInstructorId(data.plan.userId);
+        const planData = {
+          ...data.plan,
+          userId: data.plan.instructorId,
+          instruments: [],
+          time: 0,
+          contract: '',
+          consultation: '',
+          cancellation: false
+        };
+        setPlan(planData);
+        setInstructorId(data.plan.instructorId);
       }
       if(data.contract){
         setIsContract(true);
       }
     }
     fetchPlan();
-  }, [planId]);
+  }, [planId, router]);
 
 
-  // 講師とチャットするを謳歌した時の処理
+  // 講師とチャットするを押下した時の処理
   const handleChatClick = async () => {
     const roomSpecifyValue = {
       userId: userId,

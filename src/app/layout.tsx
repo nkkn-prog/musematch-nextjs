@@ -4,6 +4,7 @@ import '@mantine/core/styles.css';
 import { Noto_Sans_JP } from "next/font/google";
 import { MantineProvider} from '@mantine/core';
 import Header from "./components/Header";
+import { NextAuthProvider } from "@/lib/NextAuthProvider";
 
 
 const notoSansJP = Noto_Sans_JP({
@@ -28,8 +29,10 @@ export default function RootLayout({
       </head>
       <body className={`${notoSansJP.variable}`} suppressHydrationWarning>
           <MantineProvider>
-            <Header />
-            {children}
+            <NextAuthProvider>
+              <Header />
+              {children}
+            </NextAuthProvider>
           </MantineProvider>
       </body>
     </html>

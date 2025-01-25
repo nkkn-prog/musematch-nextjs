@@ -4,22 +4,22 @@ import { Box, Button, Container, Flex, Paper, Text, TextInput } from '@mantine/c
 import { useParams } from 'next/navigation';
 import React, { useState, useEffect } from 'react'
 import { Message } from '@/app/types';
+import { useSession } from 'next-auth/react';
+
 const ChatRoom = () => {
   const { id } = useParams();
   const [messages, setMessages] = useState([]);
-  const [userId, setUserId] = useState(null);
+  const [userId, setUserId] = useState<string>('');
   const [receiverId, setReceiverId] = useState(null);
   const [inputMessage, setInputMessage] = useState('');
+  const { data: session } = useSession();
+
   // ユーザーIDの取得
   useEffect(() => {
-    const fetchUserId = async () => {
-      const response = await fetch('/api/auth/session');
-      const session = await response.json();
-      const currentUserId = session?.user?.id;
-      setUserId(currentUserId);
-    };
-    fetchUserId();
-  }, []);
+    if (session?.user?.id) {
+      setUserId(session.user.id);
+    }
+  }, [session]);
 
   // ルームデータとメッセージの取得
   useEffect(() => {

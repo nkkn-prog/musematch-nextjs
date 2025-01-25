@@ -1,7 +1,7 @@
-import { Container, Flex, Menu, Paper, Text, MenuTarget, MenuItem, MenuDropdown, Box} from '@mantine/core'
+import { Container, Flex, Menu, Paper, Text, MenuTarget, MenuItem, MenuDropdown, Box } from '@mantine/core';
 import { IconChevronsRight } from '@tabler/icons-react';
 import Link from 'next/link';
-import React from 'react'
+import React from 'react';
 
 export const CategorySideBar = () => {
   return (
@@ -35,7 +35,7 @@ export const CategorySideBar = () => {
         </Paper>
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default CategorySideBar
+export default CategorySideBar;
