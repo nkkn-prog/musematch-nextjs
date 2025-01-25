@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MuseMatch
 
-## Getting Started
+## 📝 概要
 
-First, run the development server:
+MuseMatchは、音楽を学びたい人と教えたい人をつなぐマッチングプラットフォームです。
+生徒は自分に合った先生を見つけ、先生は自分の教えたい楽器や音楽のレッスンプランを提供することができます。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### 主な機能
+- 楽器カテゴリー別のレッスンプラン検索
+- 先生によるレッスンプラン作成・管理
+- ユーザープロフィール管理
+- セキュアな認証システム
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠 技術スタック
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### フロントエンド
+- Next.js 14.0.4 (App Router)
+- TypeScript 5.3.3
+- Mantine UI 7.3.2
+- TailwindCSS 3.4.1
+- React Hook Form 7.49.2
+- Zod 3.22.4
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### バックエンド
+- Next.js API Routes 14.0.4
+- Prisma 5.7.1
+- PostgreSQL 14.10
+- NextAuth.js 4.24.5
 
-## Learn More
+### インフラ・開発環境
+- Vercel (デプロイプラットフォーム)
+- Git 2.43.0/GitHub (バージョン管理)
+- ESLint 8.56.0 (コード品質管理)
+- Node.js 20.10.0 (実行環境)
 
-To learn more about Next.js, take a look at the following resources:
+## 🔑 テストアカウント
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+以下のテストアカウントを使用してアプリケーションを試すことができます：
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### テストユーザー1
+- メールアドレス: test1@musematch.com
+- パスワード: testuser
+- ユーザー名: test1
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### テストユーザー2
+- メールアドレス: test2@musematch.com
+- パスワード: testuser
+- ユーザー名: test2
