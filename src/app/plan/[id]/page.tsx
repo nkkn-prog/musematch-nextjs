@@ -15,15 +15,22 @@ const PlanDetail = () => {
   const [plan, setPlan] = useState<Plan | null>(null);
   const [userId, setUserId] = useState<string>('');
   const [instructorId, setInstructorId] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const [isContract, setIsContract] = useState<boolean>(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
+  // セッションとユーザーIDの管理
   useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/signin');
+      return;
+    }
+
     if (session?.user?.id) {
       setUserId(session.user.id);
     }
-  }, [session]);
+  }, [session, status, router]);
 
   // プランを取得する
   useEffect(() => {
@@ -32,54 +39,97 @@ const PlanDetail = () => {
         router.push('/plan');
         return;
       }
-      const data = await getPlan(planId);
-      console.log(data);
-      if(data.plan){
-        const planData = {
-          ...data.plan,
-          userId: data.plan.instructorId,
-          instruments: [],
-          time: 0,
-          contract: '',
-          consultation: '',
-          cancellation: false
-        };
-        setPlan(planData);
-        setInstructorId(data.plan.instructorId);
-      }
-      if(data.contract){
-        setIsContract(true);
+      try {
+        const data = await getPlan(planId);
+        console.log("データ");
+        console.log(data);
+        if(data.plan){
+          setPlan({
+            ...data.plan,
+            instruments: [],
+            time: 0,
+            contract: '',
+            consultation: '',
+            cancellation: false
+          });
+          setInstructorId(data.plan.userId);
+        }
+        if(data.contract){
+          setIsContract(true);
+        }
+      } catch (error) {
+        console.error('プランの取得に失敗しました:', error);
+        router.push('/plan');
       }
     }
     fetchPlan();
-  }, [planId, router]);
+  }, [planId, router, userId]);
 
 
   // 講師とチャットするを押下した時の処理
   const handleChatClick = async () => {
-    const roomSpecifyValue = {
-      userId: userId,
-      instructorId: instructorId,
-      planId: planId,
+    if (!session?.user?.id) {
+      alert('ログインが必要です');
+      router.push('/signin');
+      return;
     }
-    const roomData = await getChatRoomId(roomSpecifyValue);
-    router.push(`/user/chat/${roomData.id}`);
+
+    try {
+      const roomSpecifyValue = {
+        userId: session.user.id,
+        instructorId: instructorId,
+        planId: planId,
+      }
+      const roomData = await getChatRoomId(roomSpecifyValue);
+      router.push(`/user/chat/${roomData.id}`);
+    } catch (error) {
+      console.error('チャットルームの作成に失敗しました:', error);
+      alert('チャットルームの作成に失敗しました');
+    }
   };
 
-  const handleApply = () => {
-    if(userId === instructorId){
-      router.push(`/user/plan/edit/${planId}`);
-    } else {
+  const handleApply = async () => {
+    if (isLoading) return;
+
+    if (!session?.user?.id) {
+      alert('ログインが必要です');
+      router.push('/signin');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      if (session.user.id === instructorId) {
+        router.push(`/user/plan/edit/${planId}`);
+        return;
+      }
 
       const applyValue = {
         planId: planId,
-        userId: userId,
+        userId: session.user.id,
         instructorId: instructorId,
       }
 
-      applyPlan(applyValue);
-      router.push(`/plan`);
+      const response = await applyPlan(applyValue);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'プランの申し込みに失敗しました');
+      }
+
+      alert('プランの申し込みが完了しました');
+      router.push('/plan');
+    } catch (error) {
+      console.error('申し込み処理でエラーが発生しました:', error);
+      alert('申し込みに失敗しました。もう一度お試しください。');
+    } finally {
+      setIsLoading(false);
     }
+  }
+
+  if (status === 'loading') {
+    return <Container><Text>Loading...</Text></Container>;
   }
 
   return (
@@ -98,20 +148,27 @@ const PlanDetail = () => {
                 w='25%' 
                 mt="md" 
                 radius="md" 
-                onClick={() => handleChatClick()}
+                onClick={handleChatClick}
               >
                 講師とチャットする
               </Button>
             </>
             
           :
-          <Button color="navy" w='25%' mt="md" radius="md" onClick={() => handleApply()}>
-            {userId === instructorId ? '編集する' : '申し込む'}
+          <Button 
+            color="navy" 
+            w='25%' 
+            mt="md" 
+            radius="md" 
+            onClick={handleApply}
+            loading={isLoading}
+            disabled={isLoading}
+          >
+            {session?.user?.id === instructorId ? '編集する' : '申し込む'}
           </Button>
           }
         </Box>
       </Paper>
-
     </Container>
   )
 }

@@ -6,7 +6,8 @@ interface PlanResponse {
     title: string;
     description: string;
     price: number;
-    instructorId: string;
+    userId: string;
+    thumbnailPath?: string;
   };
   contract: {
     id: number;
@@ -57,9 +58,24 @@ export const getPlan = async (id: number) => {
 
 // プランを申し込む
 export const applyPlan = async (applyValue: { planId: number, userId: string, instructorId: string }) => {
-  const res = await fetch(`/api/plan/${applyValue.planId}`, {
-    method: 'POST',
-    body: JSON.stringify(applyValue),
-  });
-  return res;
+  console.log(applyValue)
+  try {
+    const res = await fetch(`/api/plan/${applyValue.planId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(applyValue),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.message || 'プランの申し込みに失敗しました');
+    }
+
+    return res;
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
 }
