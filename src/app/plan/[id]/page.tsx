@@ -5,7 +5,7 @@ import { Box, Button, Container, Paper, Text} from '@mantine/core'
 import Image from 'next/image'
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react'
-import { stripHtml } from '@/app/utils/page'
+import { stripHtml } from '@/app/utils/stripeHtmlHelper'
 import { getChatRoomId } from '@/app/utils/chat/api';
 import { useSession } from 'next-auth/react';
 

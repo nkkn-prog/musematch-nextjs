@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react'
 import { getAllPlans } from '../utils/plan/api'
 import { Mode, Plan } from '../types'
 import { useRouter } from 'next/navigation'
-import { stripHtml } from '../utils/page'
+import { stripHtml } from '../utils/stripeHtmlHelper'
 const CardList = (props: { mode: Mode }) => {
   
   const { mode } = props;
