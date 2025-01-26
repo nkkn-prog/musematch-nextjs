@@ -1,21 +1,20 @@
 import { getServerSession } from "next-auth";
-import { handler as authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 
 // 特定のプランを取得する
-export const GET = async (request: Request, { params }: { params: { id: string } }) => {
-  if (!params?.id) {
-    return NextResponse.json({ error: 'IDが存在しません' }, { status: 500 });
-  }
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
 
-  // パラメータを最初に取得
-  const planId = Number(params.id);
-
+  const id = (await params).id;
+  const planId = Number(id);
   const session = await getServerSession(authOptions) as { user?: { id: string } } | null;
-  const userId = session?.user?.id
+  const userId = session?.user?.id;
 
-  try{
+  try {
     const plan = await prisma.plan.findUnique({
       where: { id: planId }
     });
@@ -25,7 +24,7 @@ export const GET = async (request: Request, { params }: { params: { id: string }
         planId,
         studentId: userId,
       }
-    })
+    });
 
     const responseData = {
       plan,
@@ -33,7 +32,6 @@ export const GET = async (request: Request, { params }: { params: { id: string }
     }
 
     return NextResponse.json(responseData);
-
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'プランの取得に失敗しました' }, { status: 500 }); 

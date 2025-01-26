@@ -3,10 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const id = (await params).id;
+
   try {
-    const chatRoomId = await Number(params.id);
+    const chatRoomId = Number(id);
 
     const messages = await prisma.chatMessage.findMany({
       where: { 

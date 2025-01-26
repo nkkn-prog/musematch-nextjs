@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export const GET = async (
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) => {
-    const { id } = await params;
+    const id = (await params).id;
     const userId = id;
     let profile;
     try{
@@ -21,9 +21,9 @@ export const GET = async (
     }
 }
 
-export const PUT = async (request: Request, { params }: { params: { id: string } }) => {
+export const PUT = async (request: Request, { params }: { params: Promise<{ id: string }> }) => {
 
-    const { id } = await params;
+    const id = (await params).id;
     const userId = id;
     const data = await request.json();
 

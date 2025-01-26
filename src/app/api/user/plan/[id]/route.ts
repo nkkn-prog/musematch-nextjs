@@ -2,8 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
 // 特定のプランを取得
-export const GET = async (request: Request, { params }: { params: { id: number } }) => {
-  const { id } = await params
+export const GET = async (request: Request, { params }: { params: Promise<{ id: string }> }) => {
+  const id = (await params).id;
 
   try{
     if(!id){
@@ -23,9 +23,9 @@ export const GET = async (request: Request, { params }: { params: { id: number }
 }
 
 // プランを更新
-export const PUT = async (request: Request, { params }: { params: { id: number } }) => {
+export const PUT = async (request: Request, { params }: { params: Promise<{ id: string }> }) => {
   try{
-    const { id } = await params
+    const id = (await params).id;
     const data = await request.json();
 
     console.log(id)
