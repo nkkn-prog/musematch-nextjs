@@ -34,7 +34,7 @@ export default function middleware(req: NextRequest) {
   if (req.nextUrl.pathname === "/") {
     return rootMiddleware(req)
   }
-  return (authMiddleware as any)(req)
+  return (authMiddleware as unknown as (req: NextRequest) => Promise<Response>)(req)
 }
 
 export const config = {

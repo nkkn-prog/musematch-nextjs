@@ -16,6 +16,7 @@ export const GET = async (
         });
         return NextResponse.json({data: profile}, { status: 200 });
     } catch (error) {
+        console.log(error);
         return NextResponse.json({ error: 'エラーが発生しました' }, { status: 500 });
     }
 }
@@ -38,6 +39,7 @@ export const PUT = async (request: Request, { params }: { params: { id: string }
         });
         return NextResponse.json({ message: 'プロフィールを更新しました' }, { status: 200 });
     } catch (error) {
+        console.log(error);
         return NextResponse.json({ error: 'エラーが発生しました' }, { status: 500 });
     }
 }

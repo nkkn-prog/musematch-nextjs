@@ -1,5 +1,5 @@
 'use client'
-import { Button, Card, CardSection, Flex, Text, Box, Paper } from '@mantine/core'
+import { Button, Card, CardSection, Flex, Text, Box} from '@mantine/core'
 import Image from 'next/image'
 import React, { useEffect, useState } from 'react'
 import { getAllPlans } from '../utils/plan/api'
@@ -10,7 +10,6 @@ const CardList = (props: { mode: Mode }) => {
   
   const { mode } = props;
   const [userId, setUserId] = useState<string>('');
-  const [plans, setPlans] = useState<Plan[]>([]);
   const [myPlans, setMyPlans] = useState<Plan[]>([]);
   const [othersPlans, setOthersPlans] = useState<Plan[]>([]);
   const router = useRouter();
@@ -29,7 +28,6 @@ const CardList = (props: { mode: Mode }) => {
     const fetchPlans = async () => {
       // プランを取得する
       const plans = await getAllPlans();
-      setPlans(plans.data);
 
       // 取得したプランのうち、ユーザーIDが一致するプランを取得する
       if (mode === 'myplan') {
