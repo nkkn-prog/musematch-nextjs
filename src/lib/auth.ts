@@ -56,6 +56,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     jwt: async ({ token, user }: { token: JWT, user?: User }) => {
       if (user) {
@@ -72,5 +73,9 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/signin",
+  },
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30日
   },
 }; 
