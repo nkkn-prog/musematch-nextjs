@@ -1,12 +1,12 @@
 import { getServerSession } from "next-auth";
-import { handler as authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { Session } from "next-auth";
 
 interface CustomSession extends Session {
-  user?: {
+  user: {
     id: string;
-    email?: string;
-    name?: string;
+    email?: string | null;
+    name?: string | null;
   };
 }
 
