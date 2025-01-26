@@ -28,15 +28,10 @@ const ChatList = () => {
     const fetchChatList = async () => {
       if (!userId) return;
       const response = await getChatlist(id as string);
-      console.log(response)
       setChatList(response.data);
     };
     fetchChatList();
   }, [id, userId]);
-
-  console.log("チャットリスト")
-  console.log(chatList)
-
 
   return (
     <Container>

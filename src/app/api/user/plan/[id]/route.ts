@@ -28,9 +28,6 @@ export const PUT = async (request: Request, { params }: { params: Promise<{ id: 
     const id = (await params).id;
     const data = await request.json();
 
-    console.log(id)
-    console.log(data)
-
     if(!id){
       return NextResponse.json({ error: 'IDが存在しません' }, { status: 500 });
     }

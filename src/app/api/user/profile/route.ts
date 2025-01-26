@@ -8,7 +8,6 @@ export const GET = async () => {
 export const POST = async (request: Request) => {
     try {
         const data = await request.json();
-        console.log('Received data:', data);
 
         if(!data.userId) {
             return NextResponse.json({ message: 'ユーザーIDが必要です。' }, { status: 400 });

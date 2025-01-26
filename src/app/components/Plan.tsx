@@ -163,7 +163,6 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
                     const uploadedUrl = await handleUpload(files[0], uploadMode);
                     if (uploadedUrl) {
                       setThumbnailPath(uploadedUrl as string);
-                      console.log(uploadedUrl)
                     }
                   } catch(error){
                     console.error(error);

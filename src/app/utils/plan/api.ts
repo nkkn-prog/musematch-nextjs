@@ -58,7 +58,6 @@ export const getPlan = async (id: number) => {
 
 // プランを申し込む
 export const applyPlan = async (applyValue: { planId: number, userId: string, instructorId: string }) => {
-  console.log(applyValue)
   try {
     const res = await fetch(`/api/plan/${applyValue.planId}`, {
       method: 'POST',

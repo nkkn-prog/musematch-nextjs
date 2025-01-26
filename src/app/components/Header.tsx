@@ -8,8 +8,6 @@ import { useSession } from 'next-auth/react'
 export const Header = () => {
   const { data: session} = useSession();
 
-  console.log(session);
-
   return (
     <Flex w="100%" h="4rem" bg="navy" display='flex' justify='space-between' align='center'>
       <Box ml='1rem'>

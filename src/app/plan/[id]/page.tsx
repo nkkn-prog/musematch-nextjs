@@ -41,8 +41,6 @@ const PlanDetail = () => {
       }
       try {
         const data = await getPlan(planId);
-        console.log("データ");
-        console.log(data);
         if(data.plan){
           setPlan({
             ...data.plan,

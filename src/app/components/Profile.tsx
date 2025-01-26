@@ -97,7 +97,6 @@ const Profile = (props: { mode: Mode}) => {
                     const uploadedUrl = await handleUpload(files[0], uploadMode);
                     if (uploadedUrl) {
                       setProfileImageUrl(uploadedUrl as string);
-                      console.log(uploadedUrl)
                     }
                   } catch(error){
                     console.error(error);

@@ -47,8 +47,6 @@ export const POST = async (request: Request) => {
     return NextResponse.json({ error: '必要なデータが不足しています' }, { status: 400 });
   }
 
-  console.log(applyValue);
-
   try{
 
     const contract = await prisma.contract.findFirst({

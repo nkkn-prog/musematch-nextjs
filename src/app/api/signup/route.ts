@@ -34,7 +34,5 @@ export async function POST(req: NextRequest) {
     }
   });
 
-  console.log("ユーザー作成後");
-
   return new NextResponse(JSON.stringify({ message: "Success" }), { status: 201 });
 }
