@@ -1,10 +1,10 @@
 "use client";
 
-import { Box,Flex, Menu, MenuDropdown, MenuItem, MenuTarget, Text } from '@mantine/core'
+import { Box,Flex,Text } from '@mantine/core'
 import Link from 'next/link'
 import React from 'react'
 import { useSession } from 'next-auth/react'
-import NavBarProfile from './navBarProfile';
+import NavBarProfile from './NavBarProfile';
 import NavBarPlan from './NavBarPlan';
 import NavBarChat from './NavBarChat';
 import NavBarLogined from './NavBarLogined';
