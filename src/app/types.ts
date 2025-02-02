@@ -4,8 +4,8 @@ export type UploadMode = 'profile' | 'plan'
 export type ProfileValues = {
   userId: string;
   name: string;
-  bio: string;
-  imageUrl: string;
+  bio?: string;
+  imageUrl?: string;
   instruments: string[];
 }
 
@@ -13,7 +13,7 @@ export type PlanValuesForCreate = {
   userId: string;
   title: string;
   instruments: string[];
-  description: string;
+  description?: string;
   thumbnailPath?: string;
   contract: string;
   price: number;
@@ -23,10 +23,10 @@ export type PlanValuesForCreate = {
 }
 
 export type PlanValuesForUpdate = {
-  id: number | undefined;
+  id: number;
   title: string;
   instruments: string[];
-  description: string;
+  description?: string;
   thumbnailPath?: string;
   contract: string;
   price: number;

@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, Checkbox, Container, Flex, Group, MultiSelect, NumberInput, Paper, Radio, Text, TextInput, rem } from '@mantine/core'
+import { Box, Button, Checkbox, Container, Flex, Group, MultiSelect, NumberInput, Paper, Radio, Text, TextInput, rem, Switch } from '@mantine/core'
 import { Dropzone } from '@mantine/dropzone'
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react'
@@ -11,6 +11,11 @@ import Link from 'next/link';
 import { createPlan, getMyPlan, updatePlan } from '../utils/plan/api';
 import { useRouter } from 'next/navigation';
 import { handleUpload } from '../utils/upload/api';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { validationPlanSchema } from '@/validationSchema';
+import * as z from 'zod';
+
+type PlanFormValues = z.infer<typeof validationPlanSchema>;
 
 const Plan = (props: { id: number | undefined, mode: Mode }) => {
 
@@ -26,43 +31,65 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
   const [planTime, setPlanTime] = useState<number>(0);
   const [planConsultation, setPlanConsultation] = useState<string>('online');
   const [userId, setUserId] = useState<string | null>(null);
-  const [thumbnailPath, setThumbnailPath] = useState<string>('');
+  const [thumbnailPath, setThumbnailPath] = useState<string>('/default_bg.jpg');
 
   const router = useRouter();
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<PlanFormValues>({
+    resolver: zodResolver(validationPlanSchema),
+    defaultValues: {
+      title: '',
+      description: '',
+      instruments: [],
+      thumbnailPath: '/default_bg.jpg',
+      contract: '',
+      price: 0,
+      time: 0,
+      consultation: '',
+      cancellation: false,
+    }
+  });
+
   // planを取得
   useEffect(() => {
-    const fetchPlan= async () => {
-      if(mode === 'edit'){
-        if(props.id !== 0 && props.id !== undefined){
-          setPlanId(props.id);
-          const data = await getMyPlan(props.id);
-          // データをセットする
-          setPlanTitle(data.title);
-          setPlanInstruments(data.instruments);
-          setPlanDescription(data.description);
-          setPlanStop(data.cancellation);
-          setPlanContract(data.contract);
-          setPlanPrice(data.price);
-          setPlanTime(data.time);
-          setThumbnailPath(data.thumbnailPath);
+    const fetchPlan = async () => {
+      if (mode === 'edit' && props.id !== undefined) {
+        setPlanId(props.id);
+        const data = await getMyPlan(props.id);
+        if (data) {
+          setValue('title', data.title);
+          setValue('description', data.description);
+          setValue('instruments', data.instruments);
+          setValue('contract', data.contract);
+          setValue('price', data.price);
+          setValue('time', data.time);
+          setValue('consultation', data.consultation);
+          setValue('cancellation', data.cancellation);
+          setThumbnailPath(data.thumbnailPath || '/default_bg.jpg');
+        } else {
+          router.push('/user/plan/create');
         }
-      } else if(mode === 'create'){
-          setPlanTitle('');
-          setPlanInstruments([]);
-          setPlanDescription('');
-          setPlanStop(false);
-          setPlanContract('once');
-          setPlanPrice(0);
-          setPlanTime(0);
-          setThumbnailPath('');
+      } else if (mode === 'create') {
+        setValue('title', '');
+        setValue('description', '');
+        setValue('instruments', []);
+        setValue('contract', 'once');
+        setValue('price', 0);
+        setValue('time', 0);
+        setValue('consultation', 'online');
+        setValue('cancellation', false);
+        setThumbnailPath('/default_bg.jpg');
       } else {
         return alert('プランIDが取得できませんでした');
       }
     };
     fetchPlan();
-  }, [mode, props.id]);
-
+  }, [mode, props.id, router, setValue]);
 
   // ユーザーIDを取得
   useEffect(() => {
@@ -83,57 +110,31 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
   const planHeaderTitle = mode === 'create' ? 'プラン作成' : 'プラン編集';
   const buttonTitle = mode === 'create' ? '作成' : '更新';
 
-  //フォーム
-  const form = useForm();
-
   // TODO: フォームの内容を送信する
-  const handleSubmit = async () => {
-    
-    if (!userId) {
-      return alert('ユーザーIDが取得できませんでした');
-    }
-    
-    if(mode === 'create'){
-      const planValues: PlanValuesForCreate = {
-        userId: userId,
-        title: planTitle,
-        instruments: planInstruments,
-        description: planDescription,
-        thumbnailPath: thumbnailPath,
-        contract: planContract,
-        price: planPrice,
-        time: planTime,
-        consultation: planConsultation,
-        cancellation: planStop,
-      }
-      const res = await createPlan(planValues);
-      if(res.ok){
-        router.push('/plan');
-      } else {
-        alert('プランの作成に失敗しました');
-      }
+  const onSubmit = async (data: PlanFormValues) => {
+    if (!userId) return;
 
-    } else {
-        const planValues: PlanValuesForUpdate = {
+    try {
+      if (mode === 'create') {
+        const createData: PlanValuesForCreate = {
+          userId,
+          ...data,
+          thumbnailPath,
+        };
+        await createPlan(createData);
+      } else {
+        const updateData: PlanValuesForUpdate = {
           id: planId,
-          title: planTitle,
-          instruments: planInstruments,
-          description: planDescription,
-          thumbnailPath: thumbnailPath,
-          contract: planContract,
-          price: planPrice,
-          time: planTime,
-          consultation: planConsultation,
-          cancellation: planStop,
-        }
-        const res = await updatePlan(planValues);
-        if(res.ok){
-          router.push('/user/plan');
-        } else {
-          alert('プランの更新に失敗しました');
-        }
+          ...data,
+          thumbnailPath,
+        };
+        await updatePlan(updateData);
+      }
+      router.push('/plan');
+    } catch (error) {
+      console.error('プランの保存に失敗しました:', error);
     }
-  }
+  };
 
   // 編集画面の処理
 
@@ -141,14 +142,14 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
     <Container size='sm'>
         <Paper withBorder radius='md' p='md' mt='2rem'>
         <Text fz="1.5rem" fw="bold" ta='center' mt='1rem' mb='2rem'>{planHeaderTitle}</Text>
-          <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             {/* ここからプラン */}
             <Box mb='2rem'>
               <Text>サムネイル画像</Text>
               <Flex direction='column' gap='1rem' justify='center' align='center'>
                 <Image
                 // TODO: アップロードされた画像のパスを格納する
-                  src={thumbnailPath ? `${thumbnailPath}` : '/default_bg.jpg'}
+                  src={thumbnailPath}
                   alt='プロフィール画像'
                   width={600}
                   height={200}
@@ -202,8 +203,13 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
               </Dropzone>
             </Box>
             <Flex direction='column' gap='1rem'>
-              <TextInput label='タイトル' placeholder='タイトル' value={planTitle} onChange={(e) => setPlanTitle(e.target.value)}/>
-              {/* TODO: データベースから取得したデータを表示する */}
+              <TextInput 
+                label='タイトル' 
+                placeholder='タイトル'  
+                {...register('title')}
+                error={errors.title?.message}
+                required
+              />
               <MultiSelect
                 label="対象楽器"
                 placeholder="楽器を選択"
@@ -213,25 +219,10 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
                 onChange={(value) => setPlanInstruments(value)}
               />
               <RichTextEditorComponent label='内容' value={planDescription} onChange={setPlanDescription}/>
+              <RichTextEditorComponent label='契約内容' value={planContract} onChange={(value) => setPlanContract(value)}/>
             </Flex>
             <Box mt='2rem'>
                 <Flex direction='column' gap='1rem'>
-                  <Box mb='1rem'>
-                    <Text mb='0.5rem'>契約方式</Text>
-                    <Radio.Group
-                      name="contract"
-                      description="どちらかを選択してください"
-                      withAsterisk
-                      defaultValue='once'
-                      value={planContract}
-                      onChange={(value) => setPlanContract(value)}
-                    >
-                      <Flex direction='row' gap='1rem'>
-                        <Radio label='単発' value='once' my='1rem'/>
-                        <Radio label='継続' value='continue' my='1rem'/>
-                      </Flex>
-                    </Radio.Group>
-                  </Box>
                   <Box mb='1rem'>
                     <Text mb='0.5rem'>料金</Text>
                     <Flex direction='row' gap='1rem' mb='1rem'>

@@ -34,3 +34,59 @@ export const validationLoginSchema = z.object({
         .string()
         .nonempty("パスワードを入力してください")
 })
+
+export const validationProfileSchema = z.object({
+    name: z
+        .string()
+        .nonempty("名前を入力してください")
+        .max(50, "名前は50文字以内で入力してください"),
+    bio: z
+        .string()
+        .max(1000, "自己紹介は1000文字以内で入力してください")
+        .optional(),
+    instruments: z
+        .array(z.string())
+        .optional()
+        .default([]),
+    imageUrl: z
+        .string()
+        .optional(),
+})
+
+export const validationPlanSchema = z.object({
+    title: z
+        .string()
+        .nonempty("タイトルを入力してください")
+        .max(100, "タイトルは100文字以内で入力してください"),
+    description: z
+        .string()
+        .max(2000, "説明は2000文字以内で入力してください")
+        .optional(),
+    instruments: z
+        .array(z.string())
+        .optional()
+        .default([]),
+    thumbnailPath: z
+        .string()
+        .optional(),
+    contract: z
+        .string()
+        .optional()
+        .default(''),
+    price: z
+        .number()
+        .optional()
+        .default(0),
+    time: z
+        .number()
+        .optional()
+        .default(0),
+    consultation: z
+        .string()
+        .optional()
+        .default(''),
+    cancellation: z
+        .boolean()
+        .optional()
+        .default(false),
+})
