@@ -1,6 +1,5 @@
 "use client";
 import React from 'react'
-import CategorySideBar from '../components/CategorySideBar'
 import PlanList from '../components/PlanList'
 import { Container, Flex } from '@mantine/core'
 
@@ -9,7 +8,7 @@ const page = () => {
     <>
       <Container size='100%' mih='100vh'>
         <Flex>
-          <CategorySideBar/>
+          {/* <CategorySideBar/> */}
           <PlanList/>
         </Flex>
       </Container>
