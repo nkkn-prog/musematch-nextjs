@@ -30,13 +30,25 @@ const authMiddleware = withAuth(
 );
 
 // パスに応じて適切なミドルウェアを選択
-export default function middleware(req: NextRequest) {
+export default async function middleware(req: NextRequest) {
   // publicなルートはスキップ
   if (req.nextUrl.pathname.startsWith('/_next') || 
       req.nextUrl.pathname.startsWith('/api') ||
       req.nextUrl.pathname.startsWith('/signin') ||
       req.nextUrl.pathname.startsWith('/signup')) {
     return NextResponse.next()
+  }
+
+  // プロフィール作成ページのチェック
+  if (req.nextUrl.pathname === '/user/profile/create') {
+    const token = await getToken({ req })
+    if (token) {
+      const res = await fetch(`${req.nextUrl.origin}/api/user/profile/${token.sub}`)
+      const profile = await res.json()
+      if (profile) {
+        return NextResponse.redirect(new URL('/plan', req.url))
+      }
+    }
   }
 
   // ルートパスの場合
