@@ -1,5 +1,5 @@
 'use client'
-import { Box, Button, Checkbox, Container, Flex, Group, MultiSelect, NumberInput, Paper, Radio, Text, TextInput, rem, Switch } from '@mantine/core'
+import { Box, Button, Checkbox, Container, Flex, Group, MultiSelect, NumberInput, Paper, Radio, Text, TextInput, rem} from '@mantine/core'
 import { Dropzone } from '@mantine/dropzone'
 import { IconUpload, IconPhoto, IconX } from '@tabler/icons-react';
 import React, { useEffect, useState } from 'react'
@@ -22,7 +22,6 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
   // 共通部分
   const { mode } = props;
   const [planId, setPlanId] = useState<number|undefined>();
-  const [planTitle, setPlanTitle] = useState<string>('');
   const [planInstruments, setPlanInstruments] = useState<string[]>([]);
   const [planDescription, setPlanDescription] = useState<string>('');
   const [planStop, setPlanStop] = useState<boolean>(false);
@@ -124,7 +123,7 @@ const Plan = (props: { id: number | undefined, mode: Mode }) => {
         await createPlan(createData);
       } else {
         const updateData: PlanValuesForUpdate = {
-          id: planId,
+          id: planId as number,
           ...data,
           thumbnailPath,
         };
